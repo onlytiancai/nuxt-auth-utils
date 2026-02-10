@@ -44,10 +44,10 @@ export interface OAuthWeixinConfig {
 
   /**
    * Weixin OAuth Scope
-   * @default ['snsapi_login']
+   * @default 'snsapi_login'
    * @see https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
    */
-  scope?: string[]
+  scope?: string
 
   /**
    * Extra authorization parameters to provide to the authorization URL
@@ -82,7 +82,7 @@ export function defineOAuthWeixinEventHandler({ config, onSuccess, onError }: OA
       authorizationURL: 'https://open.weixin.qq.com/connect/qrconnect',
       tokenURL: 'https://api.weixin.qq.com/sns/oauth2/access_token',
       userInfoURL: 'https://api.weixin.qq.com/sns/userinfo',
-      scope: ['snsapi_login'],
+      scope: 'snsapi_login',
       authorizationParams: {},
     }) as OAuthWeixinConfig
 
@@ -112,7 +112,7 @@ export function defineOAuthWeixinEventHandler({ config, onSuccess, onError }: OA
           appid: config.clientId,
           redirect_uri: redirectURL,
           response_type: 'code',
-          scope: config.scope?.join(' ') || 'snsapi_login',
+          scope: config.scope || 'snsapi_login',
           state,
           ...config.authorizationParams,
         }) + '#wechat_redirect',
@@ -123,16 +123,16 @@ export function defineOAuthWeixinEventHandler({ config, onSuccess, onError }: OA
       return handleInvalidState(event, 'weixin', onError)
     }
 
-    const tokens = await requestAccessToken(config.tokenURL as string, {
+    const tokens = JSON.parse(await requestAccessToken(config.tokenURL as string, {
       params: {
         appid: config.clientId,
         secret: config.clientSecret,
         code: query.code,
         grant_type: 'authorization_code',
       },
-    })
+    }))
 
-    if (tokens.error) {
+    if (tokens.errmsg) {
       return handleAccessTokenErrorResponse(event, 'weixin', tokens, onError)
     }
 
