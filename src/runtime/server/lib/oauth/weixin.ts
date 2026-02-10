@@ -151,6 +151,7 @@ export function defineOAuthWeixinEventHandler({ config, onSuccess, onError }: OA
 
     // Get user info
     const user = await $fetch<WeixinUser>(config.userInfoURL as string, {
+      parseResponse: (txt) => JSON.parse(txt),
       params: {
         access_token: accessToken,
         openid: openid,
