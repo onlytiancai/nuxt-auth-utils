@@ -545,5 +545,11 @@ export default defineNuxtModule<ModuleOptions>({
       redirectURL: '',
       scope: [],
     })
+    // Weixin OAuth
+    runtimeConfig.oauth.weixin = defu(runtimeConfig.oauth.weixin, {
+      clientId: '',
+      clientSecret: '',
+      redirectURL: '',
+    })
   },
 })
